@@ -41,7 +41,7 @@ namespace MyPersonalToDoApp.Api.Controllers
             Activity activity = this._repository.GetById(id);
             if (activity == null)
             {
-                return NoContent();
+                return BadRequest();
             }
 
             ActivityDTO dto = this._mapper.Map<Activity, ActivityDTO>(activity);
@@ -52,23 +52,56 @@ namespace MyPersonalToDoApp.Api.Controllers
         [HttpPost]
         public ActionResult<ActivityCreatedDTO> Post([FromBody] ActivityCreationDTO model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
             Activity activity = this._mapper.Map<ActivityCreationDTO, Activity>(model);
             activity.Created = DateTime.UtcNow;
             activity.Status = DataModel.Status.Open;
             if (activity.Expiration.HasValue)
             {
                 activity.Expiration = activity.Expiration.Value.ToUniversalTime();
-            }
+            }            
 
             this._repository.Add(activity);
             this._repository.Commit();
 
             return Ok(new ActivityCreatedDTO(activity.Id));
+        }
+
+        [HttpPut("{id:long}")]
+        public ActionResult Put(long id, [FromBody]ActivityCreationDTO model)
+        {
+            Activity entity = this._repository.GetById(id);
+            if (entity == null)
+            {
+                return BadRequest();
+            }
+
+            entity.Name = model.Name;
+            entity.Description = model.Description;
+            entity.Expiration = null;
+            if (model.Expiration.HasValue)
+            {
+                entity.Expiration = model.Expiration.Value.ToUniversalTime();
+            }
+
+            this._repository.Update(entity);
+            this._repository.Commit();
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id:long}")]
+        public ActionResult Delete(long id)
+        {
+            Activity entity = this._repository.GetById(id);
+            if (entity == null)
+            {
+                return BadRequest();
+            }
+
+            this._repository.Delete(entity);
+            this._repository.Commit();
+
+            return NoContent();
         }
     }
 }

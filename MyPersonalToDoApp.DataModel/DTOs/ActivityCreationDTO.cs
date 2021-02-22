@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 namespace MyPersonalToDoApp.DataModel.DTOs
 {
     public class ActivityCreationDTO
-    {        
+    {
+        [Required]
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime Created { get; set; }

@@ -13,7 +13,7 @@ namespace MyPersonalToDoApp.Api.Mapper
         public MyPersonalToDoProfile()
         {
             // Entities to DTOs
-            
+            CreateMap<Activity, ActivityDTO>();
 
             // DTOs to Entities
             CreateMap<ActivityCreationDTO, Activity>();

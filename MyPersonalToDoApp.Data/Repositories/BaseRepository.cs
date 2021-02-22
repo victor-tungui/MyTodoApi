@@ -46,13 +46,14 @@ namespace MyPersonalToDoApp.Data.Repositories
         }
 
         public virtual void Update(T entity)
-        {
+        {            
             EntityEntry entry = this.SetEntityEntry(entity);
             entry.State = EntityState.Modified;
         }
 
         private EntityEntry SetEntityEntry(T entity)
         {
+            entity.LastUpdate = DateTime.UtcNow;
             return this.DbContext.Entry<T>(entity);
         }
 
