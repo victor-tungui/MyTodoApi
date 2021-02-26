@@ -11,6 +11,10 @@ using MyPersonalToDoApp.Data.Contracts;
 using MyPersonalToDoApp.Data.Repositories;
 using AutoMapper;
 using MyPersonalToDoApp.Api.Mapper;
+using Microsoft.AspNetCore.Identity;
+using MyPersonalToDoApp.DataModel.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace MyPersonalToDoApp.Api
 {
@@ -36,19 +40,11 @@ namespace MyPersonalToDoApp.Api
                 setup.AssumeDefaultVersionWhenUnspecified = true;
                 setup.ReportApiVersions = true;
             });
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MyPersonalToDoApp.Api", Version = "v1" });
-            });
 
-            // Repositories Services
-            services.AddScoped<IActivityRepository, ActivityRepository>();
-
-            // AutoMapper
-            var myTodoMapper = new MapperConfiguration(configure => {
-                configure.AddProfile(new MyPersonalToDoProfile());
-            });
-            services.AddSingleton(myTodoMapper.CreateMapper());
+            this.ConfigureSwagger(services);
+            this.ConfigureAuth(services);
+            this.ConfigureRepositories(services);
+            this.ConfigureMapper(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,10 +57,11 @@ namespace MyPersonalToDoApp.Api
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyPersonalToDoApp.Api v1"));
             }
 
-            app.UseHttpsRedirection();
+            app.UseHttpsRedirection();            
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -72,5 +69,90 @@ namespace MyPersonalToDoApp.Api
                 endpoints.MapControllers();
             });
         }
+
+        #region helpers
+
+        private void ConfigureSwagger(IServiceCollection services)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { 
+                    Title = "Personal Todo App", 
+                    Version = "v1" });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer' [space] and then your valid token in the text input below.\r\n\r\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\"",
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement { 
+                    {
+                        new OpenApiSecurityScheme {
+                            Reference = new OpenApiReference {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        System.Array.Empty<string>()
+                    }
+                });
+            });
+        }
+
+        private void ConfigureAuth(IServiceCollection services)
+        {
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ToDoContext>()
+                .AddDefaultTokenProviders();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).
+            AddJwtBearer(options => {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = Configuration["AuthJwt:ValidAudience"],
+                    ValidIssuer = Configuration["AuthJwt:ValidIssuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(Configuration["AuthJwt:Secret"]))
+                };
+            });
+
+            // Identity Configuration
+            services.Configure<IdentityOptions>(options => {
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = true;
+
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+            });
+        }
+
+        private void ConfigureRepositories(IServiceCollection services)
+        {
+            services.AddScoped<IActivityRepository, ActivityRepository>();
+        }
+
+        private void ConfigureMapper(IServiceCollection services)
+        {
+            // AutoMapper
+            var myTodoMapper = new MapperConfiguration(configure => {
+                configure.AddProfile(new MyPersonalToDoProfile());
+            });
+            services.AddSingleton(myTodoMapper.CreateMapper());
+        }
+
+        #endregion
     }
 }

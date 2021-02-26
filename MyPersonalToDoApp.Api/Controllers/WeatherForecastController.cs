@@ -1,15 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MyPersonalToDoApp.Api.Controllers
-{
+{   
+    [Authorize]    
     [ApiController]
-    [Route("api/[controller]")]
-    [ApiVersion("1")]
+    [Route("api/[controller]")]    
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -24,7 +26,8 @@ namespace MyPersonalToDoApp.Api.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+       
+        [HttpGet]        
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();

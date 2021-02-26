@@ -1,5 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MyPersonalToDoApp.DataModel.Entities;
+using MyPersonalToDoApp.DataModel.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MyPersonalToDoApp.Data
 {
-    public class ToDoContext : DbContext
+    public class ToDoContext : IdentityDbContext<ApplicationUser>
     {
         public ToDoContext(DbContextOptions<ToDoContext> options): base(options)
         {
@@ -19,13 +22,40 @@ namespace MyPersonalToDoApp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             this.ModelTodoEntity(modelBuilder);
             this.ModelActivityEntity(modelBuilder);
+            this.ModelCustomerEntity(modelBuilder);
+        }
+
+        private void ModelCustomerEntity(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Customer>(c => {
+                c.Property(o => o.UserId)
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");                    
+
+                c.Property(n => n.FirstName)
+                    .IsRequired()
+                    .HasColumnType("nvarchar(255)");
+
+                c.Property(n => n.LastName)
+                    .IsRequired()
+                    .HasColumnType("nvarchar(255)");
+                c.ToTable("Customers");
+            });
         }
 
         private void ModelActivityEntity(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Activity>().ToTable("Activities");
+            modelBuilder.Entity<Activity>(a =>
+            {
+                a.Property(a1 => a1.UserId)
+                 .HasColumnType("nvarchar(450)")
+                 .IsRequired();
+                
+                a.ToTable("Activities");
+            });
 
             modelBuilder.Entity<Activity>()
                .Property(a => a.Name)
