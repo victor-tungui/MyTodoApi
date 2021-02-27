@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using MyPersonalToDoApp.DataModel.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System;
 
 namespace MyPersonalToDoApp.Api
 {
@@ -125,23 +126,31 @@ namespace MyPersonalToDoApp.Api
                     ValidateAudience = true,
                     ValidAudience = Configuration["AuthJwt:ValidAudience"],
                     ValidIssuer = Configuration["AuthJwt:ValidIssuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(Configuration["AuthJwt:Secret"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(Configuration["AuthJwt:Secret"])),
+                    ClockSkew = TimeSpan.Zero
                 };
             });
 
             // Identity Configuration
             services.Configure<IdentityOptions>(options => {
-                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-                options.User.RequireUniqueEmail = true;
+                options.User.AllowedUserNameCharacters = Configuration.GetValue<string>("Identity:User:AllowedUserNameCharacters");
+                options.User.RequireUniqueEmail = Configuration.GetValue<bool>("Identity:User:RequireUniqueEmail");                
 
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 8;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;                
+
+                // 
+                options.Lockout.MaxFailedAccessAttempts = Configuration.GetValue<int>("Identity:Lockout:MaxFailedAccessAttempts");
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(Configuration.GetValue<int>("Identity:Lockout:DefaultLockoutTimeSpan"));
             });
         }
 
         private void ConfigureRepositories(IServiceCollection services)
         {
             services.AddScoped<IActivityRepository, ActivityRepository>();
+            services.AddScoped<IRegisterRepository, RegisterRepository>();
         }
 
         private void ConfigureMapper(IServiceCollection services)

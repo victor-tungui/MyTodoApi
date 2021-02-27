@@ -11,17 +11,24 @@ namespace MyPersonalToDoApp.DataModel.DTOs
     {
         [Required]
         [EmailAddress]
+        [MaxLength(255)]
         public string Email { get; set; }
 
         [Required]
+        [MaxLength(30)]
         public string Password { get; set; }
 
         [Required]
         [Compare("Password")]
+        [MaxLength(30)]
         public string ConfirmPassword { get; set; }
 
+        [Required]
+        [MaxLength(255)]
         public string FirstName { get; set; }
 
+        [Required]
+        [MaxLength(255)]
         public string LastName { get; set; }
     }
 }

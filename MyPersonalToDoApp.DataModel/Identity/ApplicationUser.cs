@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace MyPersonalToDoApp.DataModel.Identity
 {
     public class ApplicationUser : IdentityUser
-    {   
+    { 
+        public Customer Customer { get; set; }
     }
 }

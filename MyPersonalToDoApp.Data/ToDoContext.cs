@@ -19,6 +19,7 @@ namespace MyPersonalToDoApp.Data
 
         public DbSet<Todo> ToDos { get; set; }
         public DbSet<Activity> Activities { get; set; }
+        public DbSet<Customer> Customers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -44,6 +45,11 @@ namespace MyPersonalToDoApp.Data
                     .HasColumnType("nvarchar(255)");
                 c.ToTable("Customers");
             });
+
+            modelBuilder.Entity<ApplicationUser>()
+                .HasOne(c => c.Customer)
+                .WithOne(usr => usr.User)
+                .HasForeignKey<Customer>(au => au.UserId);
         }
 
         private void ModelActivityEntity(ModelBuilder modelBuilder)
