@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyPersonalToDoApp.Data;
 
 namespace MyPersonalToDoApp.Data.Migrations
 {
     [DbContext(typeof(ToDoContext))]
-    partial class ToDoContextModelSnapshot : ModelSnapshot
+    [Migration("20210225020623_AddCustomer")]
+    partial class AddCustomer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -217,9 +219,6 @@ namespace MyPersonalToDoApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
                     b.ToTable("Customers");
                 });
 
@@ -371,17 +370,6 @@ namespace MyPersonalToDoApp.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MyPersonalToDoApp.DataModel.Entities.Customer", b =>
-                {
-                    b.HasOne("MyPersonalToDoApp.DataModel.Identity.ApplicationUser", "User")
-                        .WithOne("Customer")
-                        .HasForeignKey("MyPersonalToDoApp.DataModel.Entities.Customer", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("MyPersonalToDoApp.DataModel.Entities.Todo", b =>
                 {
                     b.HasOne("MyPersonalToDoApp.DataModel.Entities.Activity", "Activity")
@@ -396,11 +384,6 @@ namespace MyPersonalToDoApp.Data.Migrations
             modelBuilder.Entity("MyPersonalToDoApp.DataModel.Entities.Activity", b =>
                 {
                     b.Navigation("Todos");
-                });
-
-            modelBuilder.Entity("MyPersonalToDoApp.DataModel.Identity.ApplicationUser", b =>
-                {
-                    b.Navigation("Customer");
                 });
 #pragma warning restore 612, 618
         }

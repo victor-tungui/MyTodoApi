@@ -13,7 +13,7 @@ namespace MyPersonalToDoApp.Api.Controllers
 {
     [Route("api/activities")]
     [ApiController]
-    [ApiVersion("1")]    
+    [ApiVersion("1")]
     public class ActivityController : ControllerBase
     {
         private readonly IActivityRepository _repository;
