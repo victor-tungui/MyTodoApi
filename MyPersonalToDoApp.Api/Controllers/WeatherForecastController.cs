@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace MyPersonalToDoApp.Api.Controllers
 {   
@@ -30,6 +31,9 @@ namespace MyPersonalToDoApp.Api.Controllers
         [HttpGet]        
         public IEnumerable<WeatherForecast> Get()
         {
+
+            Claim claim =  this.User.FindFirst(ClaimTypes.NameIdentifier);
+
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {

@@ -55,11 +55,7 @@ namespace MyPersonalToDoApp.Data
         private void ModelActivityEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Activity>(a =>
-            {
-                a.Property(a1 => a1.UserId)
-                 .HasColumnType("nvarchar(450)")
-                 .IsRequired();
-                
+            {   
                 a.ToTable("Activities");
             });
 
@@ -77,6 +73,11 @@ namespace MyPersonalToDoApp.Data
             modelBuilder.Entity<Activity>()
                 .Property(a => a.Status)
                 .HasConversion<int>();
+
+            modelBuilder.Entity<Activity>()
+                .HasOne(a => a.Customer)
+                .WithMany(c => c.Activities)
+                .HasForeignKey(a => a.CustomerId);
         }
 
         private void ModelTodoEntity(ModelBuilder modelBuilder)

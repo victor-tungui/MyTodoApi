@@ -78,6 +78,7 @@ namespace MyPersonalToDoApp.Api.Controllers
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, appUser.Email),
+                new Claim(ClaimTypes.NameIdentifier, appUser.Id),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToGuidString())
             };
 

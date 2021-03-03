@@ -21,9 +21,10 @@ namespace MyPersonalToDoApp.DataModel.Entities
         public ICollection<Todo> Todos { get; set; }
         public DateTime LastUpdate { get; set; }
 
-        /// <summary>
-        /// AspNet User Id
-        /// </summary>
-        public string UserId { get; set; }
+        #region Customer Link
+        public long CustomerId { get; set; }
+
+        public Customer Customer { get; set; }
+        #endregion
     }
 }
