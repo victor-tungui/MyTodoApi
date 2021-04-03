@@ -94,7 +94,8 @@ namespace MyPersonalToDoApp.Api.Controllers
             return Ok(new TokenDTO
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
-                Expiration = token.ValidTo
+                Expiration = token.ValidTo,
+                Email = appUser.Email
             }); ;
         }
     }
