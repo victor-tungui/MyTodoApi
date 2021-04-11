@@ -13,7 +13,10 @@ namespace MyPersonalToDoApp.Api.Mapper
         public MyPersonalToDoProfile()
         {
             // Entities to DTOs
-            CreateMap<Activity, ActivityDTO>();
+            CreateMap<Activity, ActivityDTO>()
+             .ForMember(dto => dto.Created, opts => opts.MapFrom(src => DateTime.SpecifyKind(src.Created, DateTimeKind.Utc).ToString("o")))
+             .ForMember(dto => dto.LastUpdate, opts => opts.MapFrom(src => DateTime.SpecifyKind(src.LastUpdate, DateTimeKind.Utc) .ToString("o")))
+             .ForMember(dto => dto.Expiration, opts => opts.MapFrom(src => src.Expiration.HasValue ? DateTime.SpecifyKind(src.Expiration.Value, DateTimeKind.Utc).ToString("o") : null));
 
             // DTOs to Entities
             CreateMap<ActivityCreationDTO, Activity>();

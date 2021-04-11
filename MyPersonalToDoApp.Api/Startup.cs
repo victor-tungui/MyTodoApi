@@ -34,6 +34,12 @@ namespace MyPersonalToDoApp.Api
             services.AddDbContext<ToDoContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             );
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins ", builder => builder.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed( o => true));
+            });
+            services.AddCors();
+
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddControllers();
             services.AddApiVersioning(setup => {
@@ -41,7 +47,6 @@ namespace MyPersonalToDoApp.Api
                 setup.AssumeDefaultVersionWhenUnspecified = true;
                 setup.ReportApiVersions = true;
             });
-
             this.ConfigureSwagger(services);
             this.ConfigureAuth(services);
             this.ConfigureRepositories(services);
@@ -58,12 +63,14 @@ namespace MyPersonalToDoApp.Api
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyPersonalToDoApp.Api v1"));
             }
 
-            app.UseHttpsRedirection();            
+            //app.UseHttpsRedirection();
 
-            app.UseRouting();
+            //app.UseCors("AllowAllOrigins");
+            app.UseCors(x => x.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(o => true));
 
+            app.UseRouting();            
             app.UseAuthentication();
-            app.UseAuthorization();
+            app.UseAuthorization();            
 
             app.UseEndpoints(endpoints =>
             {
@@ -151,6 +158,7 @@ namespace MyPersonalToDoApp.Api
         {
             services.AddScoped<IActivityRepository, ActivityRepository>();
             services.AddScoped<IRegisterRepository, RegisterRepository>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
         }
 
         private void ConfigureMapper(IServiceCollection services)

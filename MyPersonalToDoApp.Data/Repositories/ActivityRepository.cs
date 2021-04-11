@@ -14,7 +14,7 @@ namespace MyPersonalToDoApp.Data.Repositories
         {
         }
 
-        public IEnumerable<Activity> GetActivities(int status, string name)
+        public IEnumerable<Activity> GetActivities(long customerId, int status, string name)
         {
             if (!Enum.TryParse<DataModel.Status>(status.ToString(), out DataModel.Status eStatus)) {
                 eStatus = DataModel.Status.All;
@@ -25,8 +25,7 @@ namespace MyPersonalToDoApp.Data.Repositories
                 name = string.Empty;
             }
 
-
-            IQueryable<Activity> query = this.DbContext.Activities.Where(a => a.Name.StartsWith(name));
+            IQueryable<Activity> query = this.DbContext.Activities.Where(a => a.Name.StartsWith(name) && a.CustomerId == customerId);
             if (eStatus != DataModel.Status.All) {
                 query = query.Where(a => a.Status == eStatus);
             }

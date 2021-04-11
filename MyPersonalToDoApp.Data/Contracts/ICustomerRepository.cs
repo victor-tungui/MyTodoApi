@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace MyPersonalToDoApp.Data.Contracts
 {
-    public interface IActivityRepository : IBaseRepository<Activity>
+    public interface ICustomerRepository
     {
-        IEnumerable<Activity> GetActivities(long customerId, int status, string name);        
+        Customer GetByApplicationUserId(string userId);
     }
 }
