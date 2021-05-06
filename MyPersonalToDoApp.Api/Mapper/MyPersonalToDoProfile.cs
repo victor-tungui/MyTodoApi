@@ -20,6 +20,7 @@ namespace MyPersonalToDoApp.Api.Mapper
 
             // DTOs to Entities
             CreateMap<ActivityCreationDTO, Activity>();
+            CreateMap<ActivityFilterDTO, ActivityFilter>();
         }
     }
 }

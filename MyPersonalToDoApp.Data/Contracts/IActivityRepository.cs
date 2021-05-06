@@ -1,4 +1,5 @@
-﻿using MyPersonalToDoApp.DataModel.Entities;
+﻿using MyPersonalToDoApp.DataModel.DTOs;
+using MyPersonalToDoApp.DataModel.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace MyPersonalToDoApp.Data.Contracts
 {
     public interface IActivityRepository : IBaseRepository<Activity>
     {
-        IEnumerable<Activity> GetActivities(long customerId, int status, string name);        
+        IEnumerable<Activity> GetActivities(ActivityFilter filter);
     }
 }

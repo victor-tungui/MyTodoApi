@@ -21,9 +21,7 @@ namespace MyPersonalToDoApp.Api.Controllers
     public class ActivityController : BaseToDoController
     {
         private readonly IActivityRepository _activityRepo;
-        private readonly ICustomerRepository _customerRepo;
         private readonly IMapper _mapper;
-        private readonly UserManager<ApplicationUser> userManager;
 
         public ActivityController(
             IActivityRepository activityRepo,
@@ -32,29 +30,31 @@ namespace MyPersonalToDoApp.Api.Controllers
             UserManager<ApplicationUser> userManager): base(userManager, customerRepo)
         {
             this._activityRepo = activityRepo;
-            this._customerRepo = customerRepo;
             this._mapper = mapper;
-            this.userManager = userManager;
         }
 
         [HttpGet()]
-        public async Task<ActionResult<IEnumerable<ActivityDTO>>> GetActivities([FromQuery] int status = -1, [FromQuery] string name = "")
+        public async Task<ActionResult<IEnumerable<ActivityDTO>>> GetActivities([FromQuery] ActivityFilterDTO filter)
         {
             Customer customer = await this.GetCustomer();
-            IEnumerable<Activity> queryResult = this._activityRepo.GetActivities(customer.Id, status, name);
+            filter.ValidateRequest();
 
+            ActivityFilter activityFilter = this._mapper.Map<ActivityFilterDTO, ActivityFilter>(filter);
+            activityFilter.CustomerId = customer.Id;
+            IEnumerable<Activity> queryResult = this._activityRepo.GetActivities(activityFilter);
             IEnumerable<ActivityDTO> result = this._mapper.Map<IEnumerable<Activity>, IEnumerable<ActivityDTO>>(queryResult);
 
             return Ok(result);
         }
 
         [HttpGet("{id:long}")]
-        public ActionResult<ActivityDTO> Get(long id)
+        public async Task<ActionResult<ActivityDTO>> Get(long id)
         {
             Activity activity = this._activityRepo.GetById(id);
-            if (activity == null)
+            Customer customer = await this.GetCustomer();
+            if (activity == null || activity.CustomerId != customer?.Id)
             {
-                return BadRequest();
+                return StatusCode(StatusCodes.Status404NotFound);
             }
 
             ActivityDTO dto = this._mapper.Map<Activity, ActivityDTO>(activity);
@@ -65,14 +65,7 @@ namespace MyPersonalToDoApp.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<ActivityCreatedDTO>> Post([FromBody] ActivityCreationDTO model)
         {
-            ApplicationUser appUser = await base.GetUser();
-            if (appUser == null)
-            {
-                return StatusCode(StatusCodes.Status400BadRequest);
-            }
-
-            Customer customer = this._customerRepo.GetByApplicationUserId(appUser.Id);
-
+            Customer customer = await this.GetCustomer();
             if (customer == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
@@ -94,12 +87,13 @@ namespace MyPersonalToDoApp.Api.Controllers
         }
 
         [HttpPut("{id:long}")]
-        public ActionResult Put(long id, [FromBody]ActivityCreationDTO model)
+        public async Task<ActionResult> Put(long id, [FromBody]ActivityCreationDTO model)
         {
             Activity entity = this._activityRepo.GetById(id);
-            if (entity == null)
+            Customer customer = await this.GetCustomer();
+            if (entity == null || entity.CustomerId != customer?.Id)
             {
-                return BadRequest();
+                return StatusCode(StatusCodes.Status400BadRequest);
             }
 
             entity.Name = model.Name;
@@ -116,10 +110,12 @@ namespace MyPersonalToDoApp.Api.Controllers
         }
 
         [HttpDelete("{id:long}")]
-        public ActionResult Delete(long id)
+        public async Task<ActionResult> Delete(long id)
         {
             Activity entity = this._activityRepo.GetById(id);
-            if (entity == null)
+            Customer customer = await this.GetCustomer();
+
+            if (entity == null || entity.CustomerId != customer?.Id)
             {
                 return BadRequest();
             }

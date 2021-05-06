@@ -1,4 +1,5 @@
 ﻿using MyPersonalToDoApp.Data.Contracts;
+using MyPersonalToDoApp.DataModel.DTOs;
 using MyPersonalToDoApp.DataModel.Entities;
 using System;
 using System.Collections.Generic;
@@ -14,21 +15,23 @@ namespace MyPersonalToDoApp.Data.Repositories
         {
         }
 
-        public IEnumerable<Activity> GetActivities(long customerId, int status, string name)
+        public IEnumerable<Activity> GetActivities(ActivityFilter filter)
         {
-            if (!Enum.TryParse<DataModel.Status>(status.ToString(), out DataModel.Status eStatus)) {
+            if (!Enum.TryParse<DataModel.Status>(filter.Status.ToString(), out DataModel.Status eStatus)) {
                 eStatus = DataModel.Status.All;
             }
 
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(filter.Name))
             {
-                name = string.Empty;
+                filter.Name = string.Empty;
             }
 
-            IQueryable<Activity> query = this.DbContext.Activities.Where(a => a.Name.StartsWith(name) && a.CustomerId == customerId);
+            IQueryable<Activity> query = this.DbContext.Activities.Where(a => a.Name.Contains(filter.Name) && a.CustomerId == filter.CustomerId);
             if (eStatus != DataModel.Status.All) {
                 query = query.Where(a => a.Status == eStatus);
             }
+
+            query = query.Skip(filter.Page - 1).Take(filter.PageSize);
 
             return query;
         }
