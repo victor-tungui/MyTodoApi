@@ -4,13 +4,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyPersonalToDoApp.Data.Contracts;
+using MyPersonalToDoApp.Data.Paging;
 using MyPersonalToDoApp.DataModel.DTOs;
 using MyPersonalToDoApp.DataModel.Entities;
 using MyPersonalToDoApp.DataModel.Identity;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using MyPersonalToDoApp.Api.Helpers;
 
 namespace MyPersonalToDoApp.Api.Controllers
 {
@@ -34,17 +35,19 @@ namespace MyPersonalToDoApp.Api.Controllers
         }
 
         [HttpGet()]
-        public async Task<ActionResult<IEnumerable<ActivityDTO>>> GetActivities([FromQuery] ActivityFilterDTO filter)
+        public async Task<ActionResult<IList<ActivityDTO>>> GetActivities([FromQuery] ActivityFilterDTO filter)
         {
             Customer customer = await this.GetCustomer();
-            filter.ValidateRequest();
-
             ActivityFilter activityFilter = this._mapper.Map<ActivityFilterDTO, ActivityFilter>(filter);
             activityFilter.CustomerId = customer.Id;
-            IEnumerable<Activity> queryResult = this._activityRepo.GetActivities(activityFilter);
-            IEnumerable<ActivityDTO> result = this._mapper.Map<IEnumerable<Activity>, IEnumerable<ActivityDTO>>(queryResult);
 
-            return Ok(result);
+            PagingResult<Activity> queryResult = this._activityRepo.GetActivities(activityFilter);
+
+            IList<ActivityDTO> activityList = this._mapper.Map<IList<Activity>, IList<ActivityDTO>>(queryResult.Items);
+
+            PagingResult<ActivityDTO> model = queryResult.Transform(activityList);
+
+            return Ok(model);
         }
 
         [HttpGet("{id:long}")]

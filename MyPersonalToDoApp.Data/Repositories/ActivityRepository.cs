@@ -1,4 +1,5 @@
 ﻿using MyPersonalToDoApp.Data.Contracts;
+using MyPersonalToDoApp.Data.Paging;
 using MyPersonalToDoApp.DataModel.DTOs;
 using MyPersonalToDoApp.DataModel.Entities;
 using System;
@@ -15,7 +16,7 @@ namespace MyPersonalToDoApp.Data.Repositories
         {
         }
 
-        public IEnumerable<Activity> GetActivities(ActivityFilter filter)
+        public PagingResult<Activity> GetActivities(ActivityFilter filter)
         {
             if (!Enum.TryParse<DataModel.Status>(filter.Status.ToString(), out DataModel.Status eStatus)) {
                 eStatus = DataModel.Status.All;
@@ -31,9 +32,9 @@ namespace MyPersonalToDoApp.Data.Repositories
                 query = query.Where(a => a.Status == eStatus);
             }
 
-            query = query.Skip(filter.Page - 1).Take(filter.PageSize);
+            PagingResult<Activity> activityPagingResult = query.Paginate<Activity>(filter.Page, filter.PageSize);
 
-            return query;
+            return activityPagingResult;
         }
     }
 }

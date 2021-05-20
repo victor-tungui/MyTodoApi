@@ -1,4 +1,5 @@
-﻿using MyPersonalToDoApp.DataModel.DTOs;
+﻿using MyPersonalToDoApp.Data.Paging;
+using MyPersonalToDoApp.DataModel.DTOs;
 using MyPersonalToDoApp.DataModel.Entities;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,6 @@ namespace MyPersonalToDoApp.Data.Contracts
 {
     public interface IActivityRepository : IBaseRepository<Activity>
     {
-        IEnumerable<Activity> GetActivities(ActivityFilter filter);
+        PagingResult<Activity> GetActivities(ActivityFilter filter);
     }
 }

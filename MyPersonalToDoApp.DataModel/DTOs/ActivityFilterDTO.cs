@@ -11,20 +11,7 @@ namespace MyPersonalToDoApp.DataModel.DTOs
         public int Page { get; set; }
         public int PageSize { get; set; }
         public int Status { get; set; }
-        public string Name { get; set; }        
-
-        public void ValidateRequest()
-        {
-            if (this.Page <= 0)
-            {
-                this.Page = 1;
-            }
-
-            if (this.PageSize <= 0 || this.PageSize > 1000)
-            {
-                this.PageSize = 10;
-            }
-        }
+        public string Name { get; set; }
     }
 
     public class ActivityFilter : ActivityFilterDTO
