@@ -16,6 +16,10 @@ namespace MyPersonalToDoApp.Api.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ICustomerRepository _customerRepo;
 
+        public BaseToDoController()
+        {
+        }
+
         public BaseToDoController(
             UserManager<ApplicationUser> userManager,
             ICustomerRepository repoCustomer

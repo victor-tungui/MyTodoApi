@@ -159,6 +159,7 @@ namespace MyPersonalToDoApp.Api
             services.AddScoped<IActivityRepository, ActivityRepository>();
             services.AddScoped<IRegisterRepository, RegisterRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<ITodoRepository, TodoRepository>();
         }
 
         private void ConfigureMapper(IServiceCollection services)

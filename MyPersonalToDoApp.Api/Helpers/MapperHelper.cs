@@ -8,8 +8,7 @@ namespace MyPersonalToDoApp.Api.Helpers
 {
     public static class MapperHelper
     {
-        public static PagingResult<U> Transform<T, U>(this PagingResult<T> paging, IList<U> items) where T: class 
-                                                                                                where U: class 
+        public static PagingResult<U> Transform<T, U>(this PagingResult<T> paging, IList<U> items) where T: class where U: class 
         {
             var instance = new PagingResult<U>
             {
