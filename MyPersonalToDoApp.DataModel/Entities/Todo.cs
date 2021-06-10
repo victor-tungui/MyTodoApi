@@ -9,7 +9,7 @@ namespace MyPersonalToDoApp.DataModel.Entities
     public class Todo : IEntityBase
     {        
         public long Id { get; set; }
-        public string Name { get; init; }
+        public string Name { get; set; }
         public string Description { get; set; }
         public Status Status { get; set; }
         public Activity Activity { get; set; }

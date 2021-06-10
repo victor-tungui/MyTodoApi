@@ -18,9 +18,12 @@ namespace MyPersonalToDoApp.Api.Mapper
              .ForMember(dto => dto.LastUpdate, opts => opts.MapFrom(src => DateTime.SpecifyKind(src.LastUpdate, DateTimeKind.Utc) .ToString("o")))
              .ForMember(dto => dto.Expiration, opts => opts.MapFrom(src => src.Expiration.HasValue ? DateTime.SpecifyKind(src.Expiration.Value, DateTimeKind.Utc).ToString("o") : null));
 
+            CreateMap<Todo, TodoItemDTO>();
+
             // DTOs to Entities
             CreateMap<ActivityCreationDTO, Activity>();
             CreateMap<ActivityFilterDTO, ActivityFilter>();
+            CreateMap<TodoCreationDTO, Todo>();
         }
     }
 }

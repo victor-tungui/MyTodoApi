@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace MyPersonalToDoApp.DataModel.DTOs
 {
-    public class ActivityCreatedDTO
+    public class EntityCreatedDTO
     {
         public long Id { get; private set; }
 
-        public ActivityCreatedDTO(long id) => (Id) = id;
+        public DateTime CreationDate { get; private set; }
+
+        public EntityCreatedDTO(long id, DateTime date) => (Id, CreationDate) = (id, date);
     }
 }

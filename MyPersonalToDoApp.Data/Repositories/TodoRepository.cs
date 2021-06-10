@@ -27,5 +27,12 @@ namespace MyPersonalToDoApp.Data.Repositories
 
             return result;
         }
+
+        public override Todo GetById(long id)
+        {
+            var todo = this.DbContext.ToDos.Where(t => t.Id == id).Include(t => t.Activity).FirstOrDefault();
+
+            return todo;
+        }
     }
 }

@@ -67,7 +67,7 @@ namespace MyPersonalToDoApp.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ActivityCreatedDTO>> Post([FromBody] ActivityCreationDTO model)
+        public async Task<ActionResult<EntityCreatedDTO>> Post([FromBody] ActivityCreationDTO model)
         {
             Customer customer = await this.GetCustomer();
             if (customer == null)
@@ -87,7 +87,7 @@ namespace MyPersonalToDoApp.Api.Controllers
             this._activityRepo.Add(activity);
             this._activityRepo.Commit();
 
-            return Ok(new ActivityCreatedDTO(activity.Id));
+            return Ok(new EntityCreatedDTO(activity.Id, activity.Created));
         }
 
         [HttpPut("{id:long}")]
