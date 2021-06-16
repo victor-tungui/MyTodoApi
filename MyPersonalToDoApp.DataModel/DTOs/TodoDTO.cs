@@ -14,11 +14,14 @@ namespace MyPersonalToDoApp.DataModel.DTOs
 
         /// <summary>
         /// 1 - Open
-        /// 3 Closed
+        /// 3 - Closed
         /// </summary>
         public int Status { get; set; }
     }
 
+    /// <summary>
+    /// Todo Item DTO
+    /// </summary>
     public record TodoDTO
     {
         public TodoDTO()
@@ -26,6 +29,9 @@ namespace MyPersonalToDoApp.DataModel.DTOs
             this.Items = new List<TodoItemDTO>();
         }
 
+        /// <summary>
+        /// Total Items in the Collection
+        /// </summary>
         public int Total { get; set; }
 
         public int Open { get; set; }

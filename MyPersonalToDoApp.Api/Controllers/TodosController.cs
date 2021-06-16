@@ -37,6 +37,8 @@ namespace MyPersonalToDoApp.Api.Controllers
         }
         
         [HttpGet]
+        [Produces("application/json")]
+        [Consumes("application/json")]
         public async Task<ActionResult<IList<TodoDTO>>> GetTodos([FromQuery] long activityId)
         {
             var customer = await this .GetCustomer();
@@ -94,7 +96,7 @@ namespace MyPersonalToDoApp.Api.Controllers
             this._todoRepo.Update(todo);
             this._todoRepo.Commit();
 
-            return NoContent();
+            return Ok(new EntityCreatedDTO(todo.Id, todo.LastUpdate));
         }
     }
 }
