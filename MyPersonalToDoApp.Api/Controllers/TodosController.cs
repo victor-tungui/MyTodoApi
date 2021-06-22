@@ -19,7 +19,7 @@ namespace MyPersonalToDoApp.Api.Controllers
     [ApiController]
     [ApiVersion("1")]
     public class TodosController : BaseToDoController
-    {   
+    {
         private readonly ITodoRepository _todoRepo;
         private readonly IActivityRepository _activityRepo;
         private readonly IMapper _mapper;
@@ -27,21 +27,21 @@ namespace MyPersonalToDoApp.Api.Controllers
         public TodosController(
             ITodoRepository todoRepo,
             IActivityRepository activityRepo,
-            ICustomerRepository customerRepo, 
+            ICustomerRepository customerRepo,
             IMapper mapper,
-            UserManager<ApplicationUser> userManager): base(userManager, customerRepo)
+            UserManager<ApplicationUser> userManager) : base(userManager, customerRepo)
         {
             this._todoRepo = todoRepo;
             this._activityRepo = activityRepo;
             this._mapper = mapper;
         }
-        
+
         [HttpGet]
         [Produces("application/json")]
         [Consumes("application/json")]
         public async Task<ActionResult<IList<TodoDTO>>> GetTodos([FromQuery] long activityId)
         {
-            var customer = await this .GetCustomer();
+            var customer = await this.GetCustomer();
 
             var entities = this._todoRepo.GetTodos(activityId, customer.Id);
 
@@ -78,8 +78,8 @@ namespace MyPersonalToDoApp.Api.Controllers
         {
             var customer = await this.GetCustomer();
 
-            var todo = this._todoRepo.GetById(id);    
-            
+            var todo = this._todoRepo.GetById(id);
+
             if (todo == null || todo.Activity?.CustomerId != customer.Id)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
@@ -97,6 +97,21 @@ namespace MyPersonalToDoApp.Api.Controllers
             this._todoRepo.Commit();
 
             return Ok(new EntityCreatedDTO(todo.Id, todo.LastUpdate));
+        }
+
+        [HttpDelete("{id:long}")]
+        public async Task<ActionResult> Delete(long id)
+        {
+            var customer = await this.GetCustomer();
+
+            if (this._todoRepo.Delete(id, customer.Id))
+            {
+                this._todoRepo.Commit();
+
+                return StatusCode(StatusCodes.Status204NoContent);
+            }
+
+            return StatusCode(StatusCodes.Status400BadRequest);
         }
     }
 }

@@ -34,5 +34,19 @@ namespace MyPersonalToDoApp.Data.Repositories
 
             return todo;
         }
+
+        public bool Delete(long id, long customerId)
+        {
+            var todo = this.DbContext.ToDos.Where(t => t.Id == id && t.Activity.CustomerId == customerId).FirstOrDefault();
+
+            if (todo == null)
+            {
+                return false;
+            }
+
+            base.Delete(todo);
+
+            return true;
+        }
     }
 }

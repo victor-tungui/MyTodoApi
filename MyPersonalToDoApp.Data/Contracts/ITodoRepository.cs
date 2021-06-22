@@ -9,8 +9,8 @@ namespace MyPersonalToDoApp.Data.Contracts
 {
     public interface ITodoRepository : IBaseRepository<Todo>
     {
-        //Task<IEnumerable<Todo>> GetTodos(long activityId, long customerId);
-
         IEnumerable<Todo> GetTodos(long activityId, long customerId);
+
+        bool Delete(long id, long customerId);
     }
 }
